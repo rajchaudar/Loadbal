@@ -7,10 +7,14 @@ services:
     restart: always
     ports:
       - "3000:3000"
+    deploy:
+      replicas: 1   # default, can scale later
+      restart_policy:
+        condition: on-failure
 
   frontend:
     image: ${DOCKERHUB_USERNAME}/myapp-frontend:latest
     container_name: myapp-frontend
     restart: always
     ports:
-      - "80:80"   # nginx inside frontend image should serve build
+      - "80:80"  # nginx inside frontend image serves React build
