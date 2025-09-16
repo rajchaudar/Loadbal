@@ -1,0 +1,57 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---------------- Backend ----------------
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Build backend Docker image
+        run: docker build \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/myapp-backend:latest ./backend
+
+      # ---------------- Frontend ----------------
+      - name: Build frontend Docker image
+        run: docker build \
+          --build-arg REACT_APP_API_URL=${{ secrets.FRONTEND_API_URL }} \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/myapp-frontend:latest ./frontend
+
+      # ---------------- Push Images to DockerHub ----------------
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push backend image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/myapp-backend:latest
+
+      - name: Push frontend image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/myapp-frontend:latest
+
+      # ---------------- Deploy to Server ----------------
+      - name: SSH & Deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/azureuser/Loadbal
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/myapp-backend:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/myapp-frontend:latest
+            docker compose up -d --remove-orphans
