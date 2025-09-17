@@ -13,8 +13,8 @@ services:
         protocol: tcp
         mode: ingress
     networks:
-      - webnet
+      - ci_cd_pipeline
 
 networks:
-  webnet:
+  ci_cd_pipeline:
     driver: overlay
