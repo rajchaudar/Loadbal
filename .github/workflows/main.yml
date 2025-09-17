@@ -32,7 +32,7 @@ jobs:
         working-directory: ./frontend
         run: |
           npm install
-          npm run build
+          REACT_APP_API_URL=${{ secrets.FRONTEND_API_URL }} npm run build
 
       # ---------------- 4. Login to DockerHub ----------------
       - name: Login to DockerHub
