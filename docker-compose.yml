@@ -1,20 +1,17 @@
-version: '3.8'
+version: '3.9'
 
 services:
   backend:
-    image: ${DOCKERHUB_USERNAME}/myapp-backend:latest
-    container_name: myapp-backend
-    restart: always
-    ports:
-      - "3000:3000"
+    image: mrjaguar/myapp-backend:latest
     deploy:
-      replicas: 1   # default, can scale later
+      replicas: 3               
       restart_policy:
         condition: on-failure
-
-  frontend:
-    image: ${DOCKERHUB_USERNAME}/myapp-frontend:latest
-    container_name: myapp-frontend
-    restart: always
     ports:
-      - "80:80"  # nginx inside frontend image serves React build
+      - "3000:3000"             
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: overlay
