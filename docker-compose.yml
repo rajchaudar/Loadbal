@@ -5,13 +5,15 @@ services:
     image: mrjaguar/myapp-backend:latest
     deploy:
       replicas: 3
-    networks:
-      - webnet
+      restart_policy:
+        condition: on-failure
     ports:
       - target: 3000
         published: 3000
         protocol: tcp
         mode: ingress
+    networks:
+      - webnet
 
 networks:
   webnet:

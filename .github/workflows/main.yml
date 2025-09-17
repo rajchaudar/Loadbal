@@ -75,4 +75,5 @@ jobs:
           script: |
             cd /home/azureuser/Loadbal
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/myapp-backend:latest
-            docker compose up -d --remove-orphans --scale backend=3
+            docker swarm init || true   # initialize swarm if not already
+            docker stack deploy -c docker-compose.yml loadbal
