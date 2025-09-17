@@ -3,12 +3,16 @@ version: '3.9'
 services:
   backend:
     image: mrjaguar/myapp-backend:latest
-    restart: always
-    ports:
-      - "3000"  
+    deploy:
+      replicas: 3
     networks:
       - webnet
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: ingress
 
 networks:
   webnet:
-    driver: bridge
+    driver: overlay
