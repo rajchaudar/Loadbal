@@ -3,15 +3,12 @@ version: '3.9'
 services:
   backend:
     image: mrjaguar/myapp-backend:latest
-    deploy:
-      replicas: 3               
-      restart_policy:
-        condition: on-failure
+    restart: always
     ports:
-      - "3000:3000"             
+      - "3000"  
     networks:
       - webnet
 
 networks:
   webnet:
-    driver: overlay
+    driver: bridge
